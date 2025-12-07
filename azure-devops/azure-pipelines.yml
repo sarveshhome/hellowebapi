@@ -14,7 +14,7 @@ variables:
   # TODO: Replace with your actual web app name
   webAppName: 'polite-bush-6727f87496354db08e631cce86465090'
   # TODO: Replace with your actual Azure subscription service connection name
-  azureSubscription: 'YOUR_SERVICE_CONNECTION_NAME'
+  azureSubscription: '73176a20-ffeb-4713-b8b5-e18541f3d4c5'
 
 steps:
 - task: UseDotNet@2
