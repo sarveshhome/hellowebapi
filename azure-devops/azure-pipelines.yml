@@ -1,0 +1,61 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  # TODO: Replace with your actual web app name
+  webAppName: 'polite-bush-6727f87496354db08e631cce86465090'
+  # TODO: Replace with your actual Azure subscription service connection name
+  azureSubscription: 'YOUR_SERVICE_CONNECTION_NAME'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET SDK 9.x'
+  inputs:
+    packageType: 'sdk'
+    version: '9.x'
+    includePreviewVersions: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+
+- task: AzureWebApp@1
+  displayName: 'Azure Web App Deploy'
+  inputs:
+    azureSubscription: '$(azureSubscription)'
+    appType: 'webApp'
+    appName: '$(webAppName)'
+    package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
