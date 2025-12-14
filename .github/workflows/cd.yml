@@ -54,6 +54,6 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: hellowebapi-appservice
+        app-name: polite-bush-6727f87496354db08e631cce86465090  # Replace with your actual app name
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         package: ./publish
