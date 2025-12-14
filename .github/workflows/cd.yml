@@ -20,13 +20,13 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
 
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
     - name: Publish
-      run: dotnet publish -c Release -o ./publish
+      run: dotnet publish HelloWebApi.csproj -c Release -o ./publish
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -45,6 +45,11 @@ jobs:
       with:
         name: webapp
         path: ./publish
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
