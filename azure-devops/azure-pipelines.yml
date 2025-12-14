@@ -6,8 +6,8 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  webAppName: 'hellowebapi-appservice'  # Replace with your Azure App Service name
-  azureSubscription: 'Azure-Service-Connection'  # Replace with your service connection name
+  webAppName: 'polite-bush-6727f87496354db08e631cce86465090'
+  azureSubscription: 'Azure subscription 1'  # Update with your actual service connection name
 
 stages:
 - stage: Build
