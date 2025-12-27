@@ -72,5 +72,5 @@ stages:
           - task: AzureWebApp@1
             inputs:
               azureSubscription: 'cdHelloWorldAPI'
-              appName: 'helloworldsarvesh'
+              appName: 'helloworld-sarvesh-dev'
               package: '$(Pipeline.Workspace)/drop/WebApp.zip'
