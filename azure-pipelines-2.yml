@@ -15,7 +15,7 @@ stages:
 
 # ===================== CI STAGE =====================
 - stage: Build
-  displayName: 'CI - Build & Test'
+  displayName: 'CI - Build, Test & Publish'
   jobs:
   - job: BuildJob
     pool:
@@ -27,15 +27,10 @@ stages:
       inputs:
         restoreSolution: '$(solution)'
 
+    # Build only (NO WebDeploy)
     - task: VSBuild@1
       inputs:
         solution: '$(solution)'
-        msbuildArgs: >
-          /p:DeployOnBuild=true
-          /p:WebPublishMethod=Package
-          /p:PackageAsSingleFile=true
-          /p:SkipInvalidConfigurations=true
-          /p:DesktopBuildPackageLocation="$(Build.ArtifactStagingDirectory)\WebApp.zip"
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
@@ -43,6 +38,15 @@ stages:
       inputs:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
+
+    # ZIP Deploy–compatible publish
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish Web App (ZIP Deploy)'
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        zipAfterPublish: true
 
     - task: PublishBuildArtifacts@1
       inputs:
@@ -58,7 +62,7 @@ stages:
   jobs:
   - deployment: DeployDev
     displayName: 'Deploy to Azure App Service'
-    environment: dev   # enables approvals
+    environment: dev
     pool:
       vmImage: 'windows-latest'
 
@@ -70,7 +74,8 @@ stages:
             artifact: drop
 
           - task: AzureWebApp@1
+            displayName: 'ZIP Deploy to Azure App Service'
             inputs:
               azureSubscription: 'cdHelloWorldAPI_dev'
               appName: 'helloworldsarvesh'
-              package: '$(Pipeline.Workspace)/drop/WebApp.zip'
+              package: '$(Pipeline.Workspace)/drop/**/*.zip'
